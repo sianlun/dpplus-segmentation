@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-# coding: utf-8
 
-## 4.11.2021 - https://github.com/leekunhee/Mask_RCNN
 import os
 import sys
 import json
@@ -19,17 +17,20 @@ import argparse
 import warnings
 warnings.filterwarnings('ignore')
 
-# from Mask_RCNN from leekunhee fork
+
+# Root directory of the project
+ROOT_DIR = os.path.join(os.getcwd(),"./")
 from config import Config
 import utils
 import model as modellib
 
-COCO_WEIGHTS_PATH = os.path.join(os.getcwd(), "mask_rcnn_coco.h5")
+# Path to trained weights file
+COCO_WEIGHTS_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
 # Directory to save logs and model checkpoints
-DEFAULT_LOGS_DIR = os.path.join(os.getcwd(), "logs")
+DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
 
-print(COCO_WEIGHTS_PATH)
-print(DEFAULT_LOGS_DIR)
+#print(COCO_WEIGHTS_PATH)
+#print(DEFAULT_LOGS_DIR)
 
 class SegmentationConfig(Config):
   """Configuration for training on the toy  dataset.
@@ -40,7 +41,7 @@ class SegmentationConfig(Config):
 
   # We use a GPU with 12GB memory, which can fit two images.
   # Adjust down if you use a smaller GPU.
-  IMAGES_PER_GPU = 1
+  IMAGES_PER_GPU = 2
 
   # Number of classes (including background)
   NUM_CLASSES = 1 + 1  # Background + dech-lig
@@ -181,7 +182,8 @@ else:
 
 
 dataset_train,dataset_val = load_dataset_images("dataset")
-model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=100, layers='heads')
+
+model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=5, layers='heads')
 
 # this should be done. The trained weights are inside the logs directory. 
 
