@@ -1,4 +1,7 @@
-# dpplus-segmentation
+# Segmentation for DeepSpray+ Project
+
+This project uses code from https://github.com/leekunhee/Mask_RCNN @leekunhee that supports Tensorflow 2.x and keras 2.x. Tested on a Ubuntu 20.4 machine with RTX2070 running python 3.8
+
 
 ## Ensure packages are up-to-date
 ```
