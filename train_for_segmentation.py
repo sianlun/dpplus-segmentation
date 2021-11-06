@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-## 4.11.2021 - https://github.com/leekunhee/Mask_RCNN
 import os
 import sys
 import json
@@ -19,14 +18,21 @@ import argparse
 import warnings
 warnings.filterwarnings('ignore')
 
-# from Mask_RCNN from leekunhee fork
-from config import Config
-import utils
-import model as modellib
 
-COCO_WEIGHTS_PATH = os.path.join(os.getcwd(), "mask_rcnn_coco.h5")
+# Root directory of the project
+ROOT_DIR = os.path.join(os.getcwd())
+
+from mrcnn.config import Config
+from mrcnn import utils
+import mrcnn.model as modellib
+
+print(ROOT_DIR)
+
+
+# Path to trained weights file
+COCO_WEIGHTS_PATH = os.path.join(ROOT_DIR,"mask_rcnn_coco.h5")
 # Directory to save logs and model checkpoints
-DEFAULT_LOGS_DIR = os.path.join(os.getcwd(), "logs")
+DEFAULT_LOGS_DIR = os.path.join(ROOT_DIR, "logs")
 
 print(COCO_WEIGHTS_PATH)
 print(DEFAULT_LOGS_DIR)
@@ -40,7 +46,7 @@ class SegmentationConfig(Config):
 
   # We use a GPU with 12GB memory, which can fit two images.
   # Adjust down if you use a smaller GPU.
-  IMAGES_PER_GPU = 2
+  IMAGES_PER_GPU = 1
 
   # Number of classes (including background)
   NUM_CLASSES = 1 + 1  # Background + dech-lig
@@ -112,8 +118,8 @@ class SegmentationDataset(utils.Dataset):
     # Convert polygons to a bitmap mask of shape
     # [height, width, instance_count]
     info = self.image_info[image_id]
-    mask = np.zeros([info["height"], info["width"], len(info["polygons"])],
-                    dtype=np.uint8)
+    mask = np.zeros([info["height"], info["width"], len(info["polygons"])], dtype=np.uint8)
+    # mask = np.zeros([info["height"]+1, info["width"]+1, len(info["polygons"])], dtype=np.uint8)
     for i, p in enumerate(info["polygons"]):
         # Get indexes of pixels inside the polygon and set them to 1
         rr, cc = skimage.draw.polygon(p[1], p[0])
@@ -141,47 +147,62 @@ def load_dataset_images(dataset):
   dataset_val = SegmentationDataset()
   dataset_val.load_dataset(dataset, "valid")
   dataset_val.prepare()
+  print("Dataset ready")
   return dataset_train,dataset_val
 
-config = SegmentationConfig()
-config.display()
-command = "train"
-logs = DEFAULT_LOGS_DIR
-weights = "coco"
+if __name__ == '__main__':
+    import argparse
 
-if command == "train":
-  model = modellib.MaskRCNN(mode="training", config=config, model_dir=logs)
-else:
-  model = modellib.MaskRCNN(mode="inference", config=config, model_dir=logs)
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(
+        description='Train Mask R-CNN to detect balloons.')
+    parser.add_argument("command",
+                        metavar="<command>",
+                        help="'train' or 'splash'")
+    parser.add_argument('--weights', required=True,
+                        metavar="/path/to/weights.h5",
+                        help="Path to weights .h5 file or 'coco'")
 
-if weights.lower() == "coco":
-  weights_path = COCO_WEIGHTS_PATH
-    # Download weights file
-    # if not os.path.exists(weights_path):
-    #     utils.download_trained_weights(weights_path)
-elif weights.lower() == "last":
-    # Find last trained weights
-  weights_path = model.find_last()[1]
-elif weights.lower() == "imagenet":
-    # Start from ImageNet trained weights
-  weights_path = model.get_imagenet_weights()
-else:
-  weights_path = weights
+    args = parser.parse_args()
+    config = SegmentationConfig()
+    config.display()
+    command = "train"
+    logs = DEFAULT_LOGS_DIR
+    weights = "coco"
 
-# Load weights
-print("Loading weights ", weights_path)
-if weights.lower() == "coco":
-    # Exclude the last layers because they require a matching
-    # number of classes
-    model.load_weights(weights_path, by_name=True, exclude=[
-        "mrcnn_class_logits", "mrcnn_bbox_fc",
-        "mrcnn_bbox", "mrcnn_mask"])
-else:
-    model.load_weights(weights_path, by_name=True)
+    if args.command == "train":
+      model = modellib.MaskRCNN(mode="training", config=config, model_dir=logs)
+    else:
+      model = modellib.MaskRCNN(mode="inference", config=config, model_dir=logs)
 
+    if args.weights.lower() == "coco":
+      weights_path = COCO_WEIGHTS_PATH
+        # Download weights file
+        # if not os.path.exists(weights_path):
+        #     utils.download_trained_weights(weights_path)
+    elif args.weights.lower() == "last":
+        # Find last trained weights
+      weights_path = model.find_last()[1]
+    elif args.weights.lower() == "imagenet":
+        # Start from ImageNet trained weights
+      weights_path = model.get_imagenet_weights()
+    else:
+      weights_path = weights
 
-dataset_train,dataset_val = load_dataset_images("dataset")
-model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=100, layers='heads')
+    # Load weights
+    print("Loading weights ", weights_path)
+    if args.weights.lower() == "coco":
+        # Exclude the last layers because they require a matching
+        # number of classes
+        model.load_weights(weights_path, by_name=True, exclude=[
+            "mrcnn_class_logits", "mrcnn_bbox_fc",
+            "mrcnn_bbox", "mrcnn_mask"])
+    else:
+        model.load_weights(weights_path, by_name=True)
 
-# this should be done. The trained weights are inside the logs directory. 
+    dataset_train,dataset_val = load_dataset_images("dataset")
+
+    model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=100, layers='heads')
+
+    # this should be done. The trained weights are inside the logs directory. 
 
