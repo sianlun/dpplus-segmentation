@@ -44,6 +44,8 @@ class SegmentationConfig(Config):
   # Give the configuration a recognizable name
   NAME = "deepspray"
 
+  BACKBONE = "resnet101"
+
   # We use a GPU with 12GB memory, which can fit two images.
   # Adjust down if you use a smaller GPU.
   IMAGES_PER_GPU = 1
@@ -118,11 +120,12 @@ class SegmentationDataset(utils.Dataset):
     # Convert polygons to a bitmap mask of shape
     # [height, width, instance_count]
     info = self.image_info[image_id]
-    mask = np.zeros([info["height"], info["width"], len(info["polygons"])], dtype=np.uint8)
-    # mask = np.zeros([info["height"]+1, info["width"]+1, len(info["polygons"])], dtype=np.uint8)
+    # mask = np.zeros([info["height"], info["width"], len(info["polygons"])], dtype=np.uint8)
+    mask = np.zeros([info["height"]+1, info["width"]+1, len(info["polygons"])], dtype=np.uint8)
     for i, p in enumerate(info["polygons"]):
         # Get indexes of pixels inside the polygon and set them to 1
         rr, cc = skimage.draw.polygon(p[1], p[0])
+        #print(rr, cc)
         mask[rr, cc, i] = 1
 
     # Return mask, and array of class IDs of each instance. Since we have
@@ -168,7 +171,7 @@ if __name__ == '__main__':
     config.display()
     command = "train"
     logs = DEFAULT_LOGS_DIR
-    weights = "coco"
+    #weights = "coco"
 
     if args.command == "train":
       model = modellib.MaskRCNN(mode="training", config=config, model_dir=logs)
@@ -182,7 +185,8 @@ if __name__ == '__main__':
         #     utils.download_trained_weights(weights_path)
     elif args.weights.lower() == "last":
         # Find last trained weights
-      weights_path = model.find_last()[1]
+      #weights_path = model.find_last()[1]
+      weights_path = model.find_last()
     elif args.weights.lower() == "imagenet":
         # Start from ImageNet trained weights
       weights_path = model.get_imagenet_weights()
@@ -202,7 +206,7 @@ if __name__ == '__main__':
 
     dataset_train,dataset_val = load_dataset_images("dataset")
 
-    model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=100, layers='heads')
+    model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=1000, layers='heads')
 
     # this should be done. The trained weights are inside the logs directory. 
 

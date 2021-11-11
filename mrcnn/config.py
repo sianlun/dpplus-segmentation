@@ -31,7 +31,7 @@ class Config(object):
     # handle 2 images of 1024x1024px.
     # Adjust based on your GPU memory and image sizes. Use the highest
     # number that your GPU can handle for best performance.
-    IMAGES_PER_GPU = 2
+    IMAGES_PER_GPU = 1
 
     # Number of training steps per epoch
     # This doesn't need to match the size of the training set. Tensorboard
@@ -53,8 +53,8 @@ class Config(object):
     # of model.resnet_graph. If you do so, you need to supply a callable
     # to COMPUTE_BACKBONE_SHAPE as well
 
-    # BACKBONE = "resnet101"
-    BACKBONE = "resnet50"
+    BACKBONE = "resnet101"
+    #BACKBONE = "resnet50"
 
     # Only useful if you supply a callable to BACKBONE. Should compute
     # the shape of each layer of the FPN Pyramid.
@@ -126,10 +126,10 @@ class Config(object):
     #         size IMAGE_MIN_DIM x IMAGE_MIN_DIM. Can be used in training only.
     #         IMAGE_MAX_DIM is not used in this mode.
     IMAGE_RESIZE_MODE = "square"
-    # IMAGE_MIN_DIM = 800
-    # IMAGE_MAX_DIM = 1024
-    IMAGE_MIN_DIM = 512
-    IMAGE_MAX_DIM = 512
+    IMAGE_MIN_DIM = 800
+    IMAGE_MAX_DIM = 1024
+    #IMAGE_MIN_DIM = 512
+    #IMAGE_MAX_DIM = 512
 
     # Minimum scaling ratio. Checked after MIN_IMAGE_DIM and can force further
     # up scaling. For example, if set to 2 then images are scaled up to double
@@ -150,8 +150,8 @@ class Config(object):
     # ratio of 1:3. You can increase the number of proposals by adjusting
     # the RPN NMS threshold.
     
-    # TRAIN_ROIS_PER_IMAGE = 200
-    TRAIN_ROIS_PER_IMAGE = 100
+    TRAIN_ROIS_PER_IMAGE = 200
+    # TRAIN_ROIS_PER_IMAGE = 100
 
     # Percent of positive ROIs used to train classifier/mask heads
     ROI_POSITIVE_RATIO = 0.33
