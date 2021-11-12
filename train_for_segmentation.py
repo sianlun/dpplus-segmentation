@@ -171,7 +171,7 @@ if __name__ == '__main__':
     config.display()
     command = "train"
     logs = DEFAULT_LOGS_DIR
-    #weights = "coco"
+    weights = "coco"
 
     if args.command == "train":
       model = modellib.MaskRCNN(mode="training", config=config, model_dir=logs)
