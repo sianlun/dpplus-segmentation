@@ -125,6 +125,8 @@ class SegmentationDataset(utils.Dataset):
     for i, p in enumerate(info["polygons"]):
         # Get indexes of pixels inside the polygon and set them to 1
         rr, cc = skimage.draw.polygon(p[1], p[0])
+        rr[rr > mask.shape[0]-1] = mask.shape[0]-1
+        cc[cc > mask.shape[1]-1] = mask.shape[1]-1
         #print(rr, cc)
         mask[rr, cc, i] = 1
 
