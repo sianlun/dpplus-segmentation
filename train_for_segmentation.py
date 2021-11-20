@@ -51,7 +51,7 @@ class SegmentationConfig(Config):
   IMAGES_PER_GPU = 1
 
   # Number of classes (including background)
-  NUM_CLASSES = 1 + 1  # Background + dech-lig
+  NUM_CLASSES = 1 + 4  # Background + dech-lig + drop + attchlig + lobe
 
   # Number of training steps per epoch
   STEPS_PER_EPOCH = 100
@@ -71,17 +71,20 @@ class SegmentationDataset(utils.Dataset):
     subset: Subset to load: train or val
     """
     # Add classes. We have only one class to add.
-    self.add_class("detchlgm", 1, "detchlgm")
+    self.add_class("deepspray", 1, "detchlgm")
+    self.add_class("deepspray", 2, "drop")
+    self.add_class("deepspray", 3, "attchlgm")
+    self.add_class("deepspray", 4, "lobe")
 
     # Train or validation dataset?
     assert subset in ["train", "valid"]
 
     if(subset == "train"):
       num_image_set = 1000
-      label_file = os.path.join(dataset_dir, "labels_train_green_30_10_2021.json")
+      label_file = os.path.join(dataset_dir, "labels_train_green_20_11_21.json")
     else:
       num_image_set = 200
-      label_file = os.path.join(dataset_dir, "labels_valid_green_30_10_2021.json")
+      label_file = os.path.join(dataset_dir, "labels_valid_green_20_11_21.json")
 
     dataset_dir = os.path.join(dataset_dir, subset)
     annotations = json.load(open(label_file))
@@ -93,17 +96,19 @@ class SegmentationDataset(utils.Dataset):
 
       dc_from_json = annotations[i]
       polygons = []
+      class_ids = []
       for j, p in enumerate(dc_from_json):
         p[1] = [j*height for j in p[1]]
         p[0] = [j*width for j in p[0]]
         polygons.append([p[0],p[1]])
-
+        class_ids.append(p[2])
       self.add_image(
-          "detchlgm",
+          "deepspray",
           image_id=str(i)+".png",  # use file name as a unique image id
           path=imgurl,
           width=width, height=height,
-          polygons=polygons)
+          polygons=polygons,
+          class_ids=class_ids)
 
   def load_mask(self, image_id):
     """Generate instance masks for an image.
@@ -114,12 +119,13 @@ class SegmentationDataset(utils.Dataset):
     """
     # If not a balloon dataset image, delegate to parent class.
     image_info = self.image_info[image_id]
-    if image_info["source"] != "detchlgm":
+    if image_info["source"] != "deepspray":
         return super(self.__class__, self).load_mask(image_id)
 
     # Convert polygons to a bitmap mask of shape
     # [height, width, instance_count]
     info = self.image_info[image_id]
+    class_ids = image_info['class_ids']
     mask = np.zeros([info["height"], info["width"], len(info["polygons"])], dtype=np.uint8)
     # mask = np.zeros([info["height"]+1, info["width"]+1, len(info["polygons"])], dtype=np.uint8)
     for i, p in enumerate(info["polygons"]):
@@ -132,12 +138,13 @@ class SegmentationDataset(utils.Dataset):
 
     # Return mask, and array of class IDs of each instance. Since we have
     # one class ID only, we return an array of 1s
-    return mask, np.ones([mask.shape[-1]], dtype=np.int32)
+    class_ids = np.array(class_ids, dtype=np.int32)
+    return mask, class_ids #np.ones([mask.shape[-1]], dtype=np.int32)
 
   def image_reference(self, image_id):
     """Return the path of the image."""
     info = self.image_info[image_id]
-    if info["source"] == "detchlgm":
+    if info["source"] == "deepspray":
         return info["path"]
     else:
         super(self.__class__, self).image_reference(image_id)
@@ -206,7 +213,7 @@ if __name__ == '__main__':
     else:
         model.load_weights(weights_path, by_name=True)
 
-    dataset_train,dataset_val = load_dataset_images("dataset")
+    dataset_train,dataset_val = load_dataset_images("dataset_4_class")
 
     model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=1000, layers='heads')
 
