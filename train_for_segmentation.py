@@ -174,13 +174,25 @@ if __name__ == '__main__':
     parser.add_argument('--weights', required=True,
                         metavar="/path/to/weights.h5",
                         help="Path to weights .h5 file or 'coco'")
+    parser.add_argument("--backbone",
+                        metavar="<backbone>",
+                        help="'resnet50' or 'resnet101'")
+    parser.add_argument("--epoch",
+                        metavar="<backbone>",
+                        help="number of epoch")                    
+
+    logs = DEFAULT_LOGS_DIR
 
     args = parser.parse_args()
+    
+    number_of_epoch = args.epoch
+
     config = SegmentationConfig()
+    if args.backbone == 'resnet50':
+      config.BACKBONE = "resnet50"
+    else:
+      config.BACKBONE = "resnet101"
     config.display()
-    command = "train"
-    logs = DEFAULT_LOGS_DIR
-    weights = "coco"
 
     if args.command == "train":
       model = modellib.MaskRCNN(mode="training", config=config, model_dir=logs)
@@ -200,7 +212,7 @@ if __name__ == '__main__':
         # Start from ImageNet trained weights
       weights_path = model.get_imagenet_weights()
     else:
-      weights_path = weights
+      weights_path = args.weights
 
     # Load weights
     print("Loading weights ", weights_path)
@@ -215,7 +227,7 @@ if __name__ == '__main__':
 
     dataset_train,dataset_val = load_dataset_images("dataset_4_class")
 
-    model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=1000, layers='heads')
+    model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=number_of_epoch, layers='heads')
 
     # this should be done. The trained weights are inside the logs directory. 
 
