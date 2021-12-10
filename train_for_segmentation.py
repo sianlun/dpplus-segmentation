@@ -227,7 +227,7 @@ if __name__ == '__main__':
 
     dataset_train,dataset_val = load_dataset_images("dataset_4_class")
 
-    model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=number_of_epoch, layers='heads')
+    model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=int(number_of_epoch), layers='heads')
 
     # this should be done. The trained weights are inside the logs directory. 
 
