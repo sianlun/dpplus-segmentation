@@ -28,10 +28,7 @@ me@localhost: ~/myproject $ cd dpplus-segmentation
 me@localhost: ~/myproject/dpplus-segmentation $ wget https://github.com/matterport/Mask_RCNN/releases/download/v2.1/mask_rcnn_balloon.h5
 ```
 
-## setup environment
-```
-me@localhost: ~/myproject/dpplus-segmentation $ pip3 -r requirements.txt
-```
+
 ## run the project with resnet50
 
 ```
