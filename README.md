@@ -48,4 +48,4 @@ Weight files are located under log directory.
 After the 10000 epoch, please sent us the 1000th, 2000th, 3000th, 4000th, 5000th, 6000th, 7000th, 8000th, 9000th, 10000th weight file.
 Weight files are located under log directory. 
 
-
+## The weight files are inside /logs directory. There should be an individual folder for each run. 
