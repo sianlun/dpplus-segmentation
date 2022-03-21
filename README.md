@@ -5,41 +5,45 @@ This project uses code from https://github.com/leekunhee/Mask_RCNN @leekunhee th
 ## Preparation
 Apparently the Mask_RCNN works better with tf 1.13.1, and therefore python 3.6.x is required. But we were able to update the code so now its executable with tf 2.6 and python 3.8.
 
-## First, Ensure packages are up-to-date
+## start working with python 3.8 inside a directory
 ```
-$ sudo apt update
-$ sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget liblzma-dev
-```
-
-## start working in the built in python
-```
-me@localhost: ~ $ mkdir myproject
-me@localhost: ~ $ cd myproject
+me@localhost: ~ $ conda create --prefix /home/user/deepspray_segmentation python=3.8
+me@localhost: ~ $ conda activate /home/user/deepspray_segmentation
+(/home/user/deepspray_segmentation) me@localhost: ~ $ cd deepspray_segmentation
 ```
 
 ## clone project
 ```
-me@localhost: ~/myproject $ git clone -b hpc https://github.com/sianlun/dpplus-segmentation.git
-me@localhost: ~/myproject $ cd dpplus-segmentation
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation $ conda install git
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation $ git clone -b hpc https://github.com/sianlun/dpplus-segmentation.git
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation $ cd dpplus-segmentation
+
 ```
 
 ## download h5 file
 ```
-me@localhost: ~/myproject/dpplus-segmentation $ wget https://github.com/matterport/Mask_RCNN/releases/download/v2.1/mask_rcnn_balloon.h5
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ wget https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_coco.h5
 ```
 
+## install libraries
+```
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ conda install -c conda-forge tensorflow=2.6
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ pip install -U scikit-image==0.16.2
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ pip install opencv-python
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ pip install matplotlib
+```
 
 ## run the project with resnet50
 
 ```
-me@localhost: ~/myproject/dpplus-segmentation $ python train_for_segmentation.py train --weight=coco --backbone=resnet50 --epoch=10000
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ python train_for_segmentation.py train --weight=coco --backbone=resnet50 --epoch=10000
 ```
 After the 10000 epoch, please sent us the 1000th, 2000th, 3000th, 4000th, 5000th, 6000th, 7000th, 8000th, 9000th, 10000th weight file.
 Weight files are located under log directory. 
 
 ## run the project with resnet101
 ```
-me@localhost: ~/myproject/dpplus-segmentation $ python train_for_segmentation.py train --weight=coco --backbone=resnet101 --epoch=10000
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ python train_for_segmentation.py train --weight=coco --backbone=resnet101 --epoch=10000
 ```
 After the 10000 epoch, please sent us the 1000th, 2000th, 3000th, 4000th, 5000th, 6000th, 7000th, 8000th, 9000th, 10000th weight file.
 Weight files are located under log directory. 
