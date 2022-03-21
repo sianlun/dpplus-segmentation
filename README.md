@@ -26,12 +26,22 @@ me@localhost: ~ $ conda activate /home/user/deepspray_segmentation
 ```
 
 ## install libraries
+for CPU implementation
 ```
 (/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ conda install -c conda-forge tensorflow=2.6
+```
+for GPU implementation (please adapt the version of cudatoolkit accordingly (e.g check nvidia-smi for cuda version)
+```
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ conda install -c conda-forge tensorflow-gpu=2.6
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ conda install -c nvidia cudatoolkit=11.2
+```
+Then install the rest of the libraries (using pip or conda would be fine)
+```
 (/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ pip install -U scikit-image==0.16.2
 (/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ pip install opencv-python
 (/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ pip install matplotlib
 ```
+
 
 ## run the project with resnet50
 
