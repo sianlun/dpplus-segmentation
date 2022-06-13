@@ -3,7 +3,7 @@
 This project uses code from https://github.com/leekunhee/Mask_RCNN @leekunhee that supports Tensorflow 2.x and keras 2.x. Tested on a Ubuntu 20.4 machine with RTX2070 running python 3.8
 
 ## Preparation
-Apparently the Mask_RCNN works better with tf 1.13.1, and therefore python 3.6.x is required. But we were able to update the code so now its executable with tf 2.6 and python 3.8.
+Apparently the Mask_RCNN works better with tf 1.13.1, and therefore python 3.6.x is required. But we were able to update the code so now its executable with tf 2.6 and python 3.8. (Tensorflow-gpu 2.6, cudatoolkit 11.2, cuDNN 8.2.0.53)
 
 ## start working with python 3.8 inside a directory
 ```
@@ -26,12 +26,22 @@ me@localhost: ~ $ conda activate /home/user/deepspray_segmentation
 ```
 
 ## install libraries
+for CPU implementation
 ```
 (/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ conda install -c conda-forge tensorflow=2.6
+```
+for GPU implementation (please adapt the version of cudatoolkit accordingly (e.g check nvidia-smi for cuda version)
+```
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ conda install -c conda-forge tensorflow-gpu=2.6
+(/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ conda install -c nvidia cudatoolkit=11.2
+```
+Then install the rest of the libraries (using pip or conda would be fine)
+```
 (/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ pip install -U scikit-image==0.16.2
 (/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ pip install opencv-python
 (/home/user/deepspray_segmentation) me@localhost: ~/deepspray_segmentation/dpplus-segmentation $ pip install matplotlib
 ```
+
 
 ## run the project with resnet50
 
