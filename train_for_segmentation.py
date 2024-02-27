@@ -38,16 +38,11 @@ print(COCO_WEIGHTS_PATH)
 print(DEFAULT_LOGS_DIR)
 
 class SegmentationConfig(Config):
-  """Configuration for training on the toy  dataset.
-  Derives from the base Config class and overrides some values.
-  """
-  # Give the configuration a recognizable name
-  NAME = "deepspray"
 
+  NAME = "deepspray"
   BACKBONE = "resnet101"
 
   # We use a GPU with 12GB memory, which can fit two images.
-  # Adjust down if you use a smaller GPU.
   IMAGES_PER_GPU = 1
 
   # Number of classes (including background)
@@ -179,7 +174,12 @@ if __name__ == '__main__':
                         help="'resnet50' or 'resnet101'")
     parser.add_argument("--epoch",
                         metavar="<backbone>",
-                        help="number of epoch")                    
+                        help="number of epoch")
+    parser.add_argument("--save_freq",
+                        metavar="<backbone>",
+                        help="Model saving frequency in terms of steps. Default is 10.",
+                        default=10)
+                        
 
     logs = DEFAULT_LOGS_DIR
 
@@ -226,8 +226,8 @@ if __name__ == '__main__':
         model.load_weights(weights_path, by_name=True)
 
     dataset_train,dataset_val = load_dataset_images("dataset_4_class")
-
-    model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=int(number_of_epoch), layers='heads')
+    # saving_freq = int(config.STEPS_PER_EPOCH) * 2
+    model.train(dataset_train, dataset_val, learning_rate=config.LEARNING_RATE, epochs=int(number_of_epoch), layers='heads',saving_fre=int(args.save_freq))
 
     # this should be done. The trained weights are inside the logs directory. 
 
